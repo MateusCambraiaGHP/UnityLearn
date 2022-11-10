@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speedVehicle = 5.0f;
-    public float turnSpeed;
-    public float horizontalInput;
+    private bool isVehicleMovement { get { return verticalInput >= 0; } }
+    private float speedVehicle;
+    private float turnSpeed;
+    private float horizontalInput;
+    private float verticalInput;
     
     void Start()
     {
@@ -17,10 +19,26 @@ public class PlayerController : MonoBehaviour
     // A cada frame
     void Update()
     {
+        var translationVehicleRight = Vector3.up * turnSpeed * Time.deltaTime * horizontalInput;
+        var translationVehicleForward = Vector3.forward * Time.deltaTime * speedVehicle * verticalInput;
+        //capturando inputs
         horizontalInput = Input.GetAxis("Horizontal");
-        var translationVehicleForward = Vector3.forward * Time.deltaTime * speedVehicle;
-        var translationVehicleRight = Vector3.right * Time.deltaTime * turnSpeed * horizontalInput;
+        verticalInput = Input.GetAxis("Vertical");
         transform.Translate(translationVehicleForward);
-        transform.Translate(translationVehicleRight);
+        if (isVehicleMovement)
+        {
+            transform.Rotate(translationVehicleRight);
+        }
+        //atualizando velocidade do veiculo
+        UpdateSpeedVehicle();
+    }
+
+    private void UpdateSpeedVehicle() 
+    {
+        if (isVehicleMovement)
+        {
+            speedVehicle += 0.1f;
+            turnSpeed += 0.1f;
+        }
     }
 }
